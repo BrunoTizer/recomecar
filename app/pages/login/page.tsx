@@ -1,0 +1,78 @@
+"use client";
+import { useState } from "react";
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErro("");
+
+    try {
+      const res = await fetch(
+        "https://recomecar-restfulapi.onrender.com/usuarios/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, senha }),
+        }
+      );
+
+      if (!res.ok) {
+        const errorMsg = await res.text();
+        setErro(errorMsg || "Falha ao autenticar. Verifique os dados.");
+        setLoading(false);
+        return;
+      }
+
+      const user = await res.json();
+      alert("Login realizado com sucesso!\nBem-vindo, " + user.nome);
+    } catch (err) {
+      setErro("Erro de conexão. Tente novamente." + err);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <section className="max-w-sm mx-auto bg-white rounded-xl shadow p-6 mt-12">
+      <h1 className="text-2xl font-bold mb-6 text-green-900 text-center">
+        Entrar
+      </h1>
+      <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <input
+          type="email"
+          placeholder="E-mail"
+          className="border rounded px-3 py-2"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          className="border rounded px-3 py-2"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          required
+        />
+        <button
+          type="submit"
+          className="bg-green-900 text-white rounded py-2 font-bold hover:bg-green-800 transition"
+          disabled={loading}
+        >
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
+        {erro && <div className="text-red-600 text-sm text-center">{erro}</div>}
+      </form>
+      <div className="mt-4 text-center">
+        <a href="/pages/cadastro" className="text-green-900 underline">
+          Não tem conta? Cadastre-se
+        </a>
+      </div>
+    </section>
+  );
+}
