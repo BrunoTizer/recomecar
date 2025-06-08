@@ -19,15 +19,18 @@ export default function SolicitarAjudaPage() {
   const [checkingLogin, setCheckingLogin] = useState(true);
 
   useEffect(() => {
-    fetch("https://recomecar-restfulapi.onrender.com/categorias")
+    fetch("http://localhost:8080/categorias")
       .then((res) => res.json())
       .then((data: Categoria[]) => {
         setCategorias(
           Array.isArray(data)
-            ? data.map((c) => ({
-                value: c.idCategoria ?? c.id_categoria,
-                label: c.nome,
-              }))
+            ? (data
+                .map((c) => {
+                  const value = c.idCategoria ?? c.id_categoria;
+                  if (typeof value !== "number") return null;
+                  return { value, label: c.nome };
+                })
+                .filter(Boolean) as { value: number; label: string }[])
             : []
         );
       });
@@ -59,20 +62,17 @@ export default function SolicitarAjudaPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        "https://recomecar-restfulapi.onrender.com/pedidos-ajuda",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            usuarioId,
-            categoriaId: Number(categoriaId),
-            descricao,
-            prioridade: Number(prioridade),
-            statusPedidoId,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:8080/pedidos-ajuda", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usuarioId,
+          categoriaId: Number(categoriaId),
+          descricao,
+          prioridade: Number(prioridade),
+          statusPedidoId,
+        }),
+      });
 
       if (!res.ok) {
         const msg = await res.text();

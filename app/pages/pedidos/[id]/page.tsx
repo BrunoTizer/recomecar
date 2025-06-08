@@ -1,13 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { OfertaAjuda, PedidoAjuda } from "@/app/types";
 
 export default function PedidoDetalhePage() {
   const params = useParams();
   const router = useRouter();
   const { id } = params;
 
-  const [pedido, setPedido] = useState<any>(null);
+  const [pedido, setPedido] = useState<PedidoAjuda | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
@@ -16,14 +17,16 @@ export default function PedidoDetalhePage() {
   useEffect(() => {
     async function fetchPedido() {
       try {
-        const res = await fetch(
-          `https://recomecar-restfulapi.onrender.com/pedidos-ajuda/${id}`
-        );
+        const res = await fetch(`http://localhost:8080/pedidos-ajuda/${id}`);
         if (!res.ok) throw new Error(await res.text());
         const data = await res.json();
         setPedido(data);
-      } catch (err: any) {
-        setErro(err.message || "Erro ao carregar pedido.");
+      } catch (err) {
+        if (err instanceof Error) {
+          setErro(err.message || "Erro ao carregar pedido.");
+        } else {
+          setErro("Erro ao carregar pedido.");
+        }
       }
       setLoading(false);
     }
@@ -39,33 +42,32 @@ export default function PedidoDetalhePage() {
       const usuarioId = user.idUsuario;
       if (!usuarioId) throw new Error("Usuário não encontrado.");
 
-      const ofertasRes = await fetch(
-        "https://recomecar-restfulapi.onrender.com/ofertas-ajuda"
-      );
+      const ofertasRes = await fetch("http://localhost:8080/ofertas-ajuda");
       if (!ofertasRes.ok) throw new Error("Erro ao buscar ofertas.");
-      const ofertas = await ofertasRes.json();
-      const minhas = ofertas.filter((o: any) => o.usuarioId === usuarioId);
+      const ofertas = (await ofertasRes.json()) as OfertaAjuda[];
+      const minhas = ofertas.filter((o) => o.usuarioId === usuarioId);
       if (minhas.length === 0)
         throw new Error("Cadastre uma oferta de ajuda primeiro!");
       const ultimaOferta = minhas[minhas.length - 1];
 
-      const res = await fetch(
-        "https://recomecar-restfulapi.onrender.com/matches",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ofertaAjudaId: ultimaOferta.id,
-            pedidoAjudaId: pedido.id,
-            statusMatchId: 1, // Pode ser 1 = pendente, etc
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:8080/matches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ofertaAjudaId: ultimaOferta.id,
+          pedidoAjudaId: pedido!.id,
+          statusMatchId: 1,
+        }),
+      });
       if (!res.ok) throw new Error(await res.text());
       setSucesso("Match criado com sucesso! Entraremos em contato.");
       setTimeout(() => router.push("/pages/historico"), 2000);
-    } catch (err: any) {
-      setErro(err.message || "Erro ao criar match.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setErro(err.message || "Erro ao criar match.");
+      } else {
+        setErro("Erro ao criar match.");
+      }
     }
     setBtnLoading(false);
   }

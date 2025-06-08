@@ -1,24 +1,27 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { PedidoAjuda } from "@/app/types";
 
 export default function PedidosPage() {
   const router = useRouter();
-  const [pedidos, setPedidos] = useState<any[]>([]);
+  const [pedidos, setPedidos] = useState<PedidoAjuda[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
 
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const res = await fetch(
-          "https://recomecar-restfulapi.onrender.com/pedidos-ajuda"
-        );
+        const res = await fetch("http://localhost:8080/pedidos-ajuda");
         if (!res.ok) throw new Error(await res.text());
-        const data = await res.json();
+        const data: PedidoAjuda[] = await res.json();
         setPedidos(data);
-      } catch (err: any) {
-        setErro(err.message || "Erro ao buscar pedidos.");
+      } catch (err) {
+        if (err instanceof Error) {
+          setErro(err.message || "Erro ao buscar pedidos.");
+        } else {
+          setErro("Erro ao buscar pedidos.");
+        }
       }
       setLoading(false);
     };

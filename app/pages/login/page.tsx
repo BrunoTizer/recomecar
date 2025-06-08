@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,14 +15,11 @@ export default function LoginPage() {
     setErro("");
 
     try {
-      const res = await fetch(
-        "https://recomecar-restfulapi.onrender.com/usuarios/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, senha }),
-        }
-      );
+      const res = await fetch("http://localhost:8080/usuarios/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha }),
+      });
 
       if (!res.ok) {
         const errorMsg = await res.text();
@@ -31,7 +30,13 @@ export default function LoginPage() {
 
       const user = await res.json();
       localStorage.setItem("usuario", JSON.stringify(user));
-      alert("Login realizado com sucesso!\nBem-vindo, " + user.nome);
+      if (user.tipo === "vitima") {
+        router.replace("/pages/solicitar-ajuda");
+      } else if (user.tipo === "voluntario") {
+        router.replace("/pages/oferecer-ajuda");
+      } else {
+        router.replace("/");
+      }
     } catch (err) {
       setErro("Erro de conexão. Tente novamente." + err);
     }

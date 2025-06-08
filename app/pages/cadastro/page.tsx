@@ -20,14 +20,11 @@ export default function CadastroPage() {
     setSucesso("");
 
     try {
-      const res = await fetch(
-        "https://recomecar-restfulapi.onrender.com/usuarios",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nome, email, senha, telefone, tipo }),
-        }
-      );
+      const res = await fetch("http://localhost:8080/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, email, senha, telefone, tipo }),
+      });
 
       if (!res.ok) {
         const errorMsg = await res.text();

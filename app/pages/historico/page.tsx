@@ -1,7 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-const ENDPOINT_STATUS =
-  "https://recomecar-restfulapi.onrender.com/status-pedido";
+import {
+  Categoria,
+  HistoricoTabelaProps,
+  OfertaAjuda,
+  PedidoAjuda,
+  StatusPedido,
+} from "../../types";
+
+const ENDPOINT_STATUS = "http://localhost:8080/status-pedido";
 
 export default function HistoricoPage() {
   const [tab, setTab] = useState<"solicitacoes" | "contribuicoes">(
@@ -11,12 +18,13 @@ export default function HistoricoPage() {
   const [statusPedido, setStatusPedido] = useState<Record<number, string>>({});
 
   useEffect(() => {
-    fetch("https://recomecar-restfulapi.onrender.com/categorias")
+    fetch("http://localhost:8080/categorias")
       .then((res) => res.json())
-      .then((lista) => {
+      .then((lista: Categoria[]) => {
         const map: Record<number, string> = {};
-        lista.forEach((c: any) => {
-          map[c.idCategoria || c.id_categoria] = c.nome;
+        lista.forEach((c) => {
+          const id = c.idCategoria ?? c.id_categoria;
+          if (typeof id === "number") map[id] = c.nome;
         });
         setCategorias(map);
       });
@@ -25,10 +33,11 @@ export default function HistoricoPage() {
   useEffect(() => {
     fetch(ENDPOINT_STATUS)
       .then((res) => res.json())
-      .then((lista) => {
+      .then((lista: StatusPedido[]) => {
         const map: Record<number, string> = {};
-        lista.forEach((s: any) => {
-          map[s.idStatus || s.id_status] = s.nome;
+        lista.forEach((s) => {
+          const id = s.idStatus ?? s.id_status;
+          if (typeof id === "number") map[id] = s.nome;
         });
         setStatusPedido(map);
       });
@@ -82,8 +91,12 @@ export default function HistoricoPage() {
   );
 }
 
-function Solicitacoes({ formatarData, categorias, statusPedido }: any) {
-  const [dados, setDados] = useState<any[]>([]);
+function Solicitacoes({
+  formatarData,
+  categorias,
+  statusPedido,
+}: HistoricoTabelaProps) {
+  const [dados, setDados] = useState<PedidoAjuda[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -91,7 +104,7 @@ function Solicitacoes({ formatarData, categorias, statusPedido }: any) {
     const usuarioId = user.idUsuario;
     if (!usuarioId) return;
 
-    fetch(`https://recomecar-restfulapi.onrender.com/pedidos-ajuda`)
+    fetch(`http://localhost:8080/pedidos-ajuda`)
       .then((res) => res.json())
       .then((lista) => {
         setDados(
@@ -142,8 +155,12 @@ function Solicitacoes({ formatarData, categorias, statusPedido }: any) {
   );
 }
 
-function Contribuicoes({ formatarData, categorias, statusPedido }: any) {
-  const [dados, setDados] = useState<any[]>([]);
+function Contribuicoes({
+  formatarData,
+  categorias,
+  statusPedido,
+}: HistoricoTabelaProps) {
+  const [dados, setDados] = useState<OfertaAjuda[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -151,7 +168,7 @@ function Contribuicoes({ formatarData, categorias, statusPedido }: any) {
     const usuarioId = user.idUsuario;
     if (!usuarioId) return;
 
-    fetch(`https://recomecar-restfulapi.onrender.com/ofertas-ajuda`)
+    fetch(`http://localhost:8080/ofertas-ajuda`)
       .then((res) => res.json())
       .then((lista) => {
         setDados(

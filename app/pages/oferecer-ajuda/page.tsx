@@ -1,36 +1,58 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Categoria } from "@/app/types";
 
 export default function OferecerAjudaPage() {
   const router = useRouter();
   const [categorias, setCategorias] = useState<
     { value: number; label: string }[]
   >([]);
-  const [categoriaId, setCategoriaId] = useState("");
+  const [categoriaId, setCategoriaId] = useState<number | "">("");
   const [descricao, setDescricao] = useState("");
   const [statusPedidoId] = useState(1);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+  const [usuarioId, setUsuarioId] = useState<number | null>(null);
+  const [checkingLogin, setCheckingLogin] = useState(true);
 
   useEffect(() => {
-    fetch("https://recomecar-restfulapi.onrender.com/categorias")
+    fetch("http://localhost:8080/categorias")
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: Categoria[]) => {
         setCategorias(
           Array.isArray(data)
-            ? data.map((c: any) => ({
-                value: c.idCategoria || c.id_categoria,
-                label: c.nome,
-              }))
+            ? (data
+                .map((c) => {
+                  const value = c.idCategoria ?? c.id_categoria;
+                  if (typeof value !== "number") return null;
+                  return { value, label: c.nome };
+                })
+                .filter(Boolean) as { value: number; label: string }[])
             : []
         );
       });
   }, []);
 
-  const user = JSON.parse(localStorage.getItem("usuario") || "{}");
-  const usuarioId = user.idUsuario;
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+    if (user?.idUsuario) {
+      setUsuarioId(user.idUsuario);
+      setCheckingLogin(false);
+    } else {
+      router.replace("/pages/login");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    setErro("");
+    setSucesso("");
+  }, [categoriaId, descricao]);
+
+  if (checkingLogin) {
+    return <div className="text-center">Carregando...</div>;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,19 +61,16 @@ export default function OferecerAjudaPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        "https://recomecar-restfulapi.onrender.com/ofertas-ajuda",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            usuarioId,
-            categoriaId: Number(categoriaId),
-            descricao,
-            statusPedidoId,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:8080/ofertas-ajuda", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usuarioId,
+          categoriaId: Number(categoriaId),
+          descricao,
+          statusPedidoId,
+        }),
+      });
 
       if (!res.ok) {
         const msg = await res.text();
