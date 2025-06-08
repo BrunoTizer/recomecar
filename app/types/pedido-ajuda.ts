@@ -5,4 +5,5 @@ export interface PedidoAjuda {
   dataPedido: string;
   categoriaId: number;
   usuarioId: number;
+  prioridade: number;
 }

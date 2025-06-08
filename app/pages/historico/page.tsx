@@ -7,17 +7,30 @@ import {
   PedidoAjuda,
   StatusPedido,
 } from "../../types";
+import { useRouter } from "next/navigation";
 
 const ENDPOINT_STATUS = "http://localhost:8080/status-pedido";
 
 export default function HistoricoPage() {
+  const router = useRouter();
   const [tab, setTab] = useState<"solicitacoes" | "contribuicoes">(
     "solicitacoes"
   );
   const [categorias, setCategorias] = useState<Record<number, string>>({});
   const [statusPedido, setStatusPedido] = useState<Record<number, string>>({});
+  const [checkingLogin, setCheckingLogin] = useState(true);
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+    if (user?.idUsuario) {
+      setCheckingLogin(false);
+    } else {
+      router.replace("/pages/login");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (checkingLogin) return;
     fetch("http://localhost:8080/categorias")
       .then((res) => res.json())
       .then((lista: Categoria[]) => {
@@ -28,9 +41,10 @@ export default function HistoricoPage() {
         });
         setCategorias(map);
       });
-  }, []);
+  }, [checkingLogin]);
 
   useEffect(() => {
+    if (checkingLogin) return;
     fetch(ENDPOINT_STATUS)
       .then((res) => res.json())
       .then((lista: StatusPedido[]) => {
@@ -41,12 +55,16 @@ export default function HistoricoPage() {
         });
         setStatusPedido(map);
       });
-  }, []);
+  }, [checkingLogin]);
 
   function formatarData(data: string) {
     const d = new Date(data);
     d.setHours(d.getHours() + 3);
     return d.toLocaleDateString("pt-BR");
+  }
+
+  if (checkingLogin) {
+    return <div className="text-center mt-12">Carregando...</div>;
   }
 
   return (
