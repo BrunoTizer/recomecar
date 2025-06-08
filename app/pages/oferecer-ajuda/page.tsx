@@ -100,7 +100,7 @@ export default function OferecerAjudaPage() {
         <select
           className="border rounded px-3 py-2"
           value={categoriaId}
-          onChange={(e) => setCategoriaId(e.target.value)}
+          onChange={(e) => setCategoriaId(Number(e.target.value))}
           required
         >
           <option value="">Selecione a categoria</option>

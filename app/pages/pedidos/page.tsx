@@ -9,7 +9,19 @@ export default function PedidosPage() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
 
+  const [checkingLogin, setCheckingLogin] = useState(true);
+
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+    if (user?.idUsuario) {
+      setCheckingLogin(false);
+    } else {
+      router.replace("/pages/login");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (checkingLogin) return;
     const fetchPedidos = async () => {
       try {
         const res = await fetch("http://localhost:8080/pedidos-ajuda");
@@ -26,7 +38,11 @@ export default function PedidosPage() {
       setLoading(false);
     };
     fetchPedidos();
-  }, []);
+  }, [checkingLogin]);
+
+  if (checkingLogin) {
+    return <div className="text-center">Carregando...</div>;
+  }
 
   if (loading) {
     return <div className="text-center mt-16">Carregando pedidos...</div>;
