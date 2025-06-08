@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Categoria } from "../types";
+import { Categoria } from "../../types";
 
 export default function SolicitarAjudaPage() {
   const router = useRouter();
