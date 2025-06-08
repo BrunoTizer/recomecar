@@ -1,64 +1,203 @@
+"use client";
+import { useState, useEffect } from "react";
+const ENDPOINT_STATUS =
+  "https://recomecar-restfulapi.onrender.com/status-pedido";
+
 export default function HistoricoPage() {
+  const [tab, setTab] = useState<"solicitacoes" | "contribuicoes">(
+    "solicitacoes"
+  );
+  const [categorias, setCategorias] = useState<Record<number, string>>({});
+  const [statusPedido, setStatusPedido] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    fetch("https://recomecar-restfulapi.onrender.com/categorias")
+      .then((res) => res.json())
+      .then((lista) => {
+        const map: Record<number, string> = {};
+        lista.forEach((c: any) => {
+          map[c.idCategoria || c.id_categoria] = c.nome;
+        });
+        setCategorias(map);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(ENDPOINT_STATUS)
+      .then((res) => res.json())
+      .then((lista) => {
+        const map: Record<number, string> = {};
+        lista.forEach((s: any) => {
+          map[s.idStatus || s.id_status] = s.nome;
+        });
+        setStatusPedido(map);
+      });
+  }, []);
+
+  function formatarData(data: string) {
+    const d = new Date(data);
+    d.setHours(d.getHours() + 3);
+    return d.toLocaleDateString("pt-BR");
+  }
+
   return (
     <section className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6 mt-8">
-      <h1 className="text-2xl font-bold mb-6 text-green-900">
-        Histórico de Contribuições
-      </h1>
-      <form className="flex flex-col sm:flex-row gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Nome"
-          className="border border-yellow-200 rounded px-4 py-2 flex-1"
-        />
-        <input
-          type="date"
-          placeholder="Data"
-          className="border border-yellow-200 rounded px-4 py-2 flex-1"
-        />
-        <input
-          type="text"
-          placeholder="Categoria"
-          className="border border-yellow-200 rounded px-4 py-2 flex-1"
-        />
+      <h1 className="text-2xl font-bold mb-6 text-green-900">Histórico</h1>
+      <div className="flex mb-6">
         <button
-          type="submit"
-          className="bg-green-900 text-white font-bold rounded px-4 py-2 hover:bg-green-800 transition"
+          className={`flex-1 py-2 rounded-l ${
+            tab === "solicitacoes"
+              ? "bg-yellow-300 text-green-900 font-bold"
+              : "bg-gray-100"
+          }`}
+          onClick={() => setTab("solicitacoes")}
         >
-          Pesquisar
+          Minhas Solicitações
         </button>
-      </form>
-      <table className="w-full text-left">
-        <thead>
-          <tr>
-            <th className="py-2">Status</th>
-            <th className="py-2">Nome</th>
-            <th className="py-2">Data</th>
-            <th className="py-2">Categoria</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
+        <button
+          className={`flex-1 py-2 rounded-r ${
+            tab === "contribuicoes"
+              ? "bg-yellow-300 text-green-900 font-bold"
+              : "bg-gray-100"
+          }`}
+          onClick={() => setTab("contribuicoes")}
+        >
+          Minhas Contribuições
+        </button>
+      </div>
+      {tab === "solicitacoes" ? (
+        <Solicitacoes
+          formatarData={formatarData}
+          categorias={categorias}
+          statusPedido={statusPedido}
+        />
+      ) : (
+        <Contribuicoes
+          formatarData={formatarData}
+          categorias={categorias}
+          statusPedido={statusPedido}
+        />
+      )}
+    </section>
+  );
+}
+
+function Solicitacoes({ formatarData, categorias, statusPedido }: any) {
+  const [dados, setDados] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+    const usuarioId = user.idUsuario;
+    if (!usuarioId) return;
+
+    fetch(`https://recomecar-restfulapi.onrender.com/pedidos-ajuda`)
+      .then((res) => res.json())
+      .then((lista) => {
+        setDados(
+          Array.isArray(lista)
+            ? lista.filter((p) => p.usuarioId === usuarioId)
+            : []
+        );
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Carregando...</div>;
+
+  return (
+    <table className="w-full text-left">
+      <thead>
+        <tr>
+          <th className="py-2">Status</th>
+          <th className="py-2">Descrição</th>
+          <th className="py-2">Data</th>
+          <th className="py-2">Categoria</th>
+        </tr>
+      </thead>
+      <tbody>
+        {dados.map((p) => (
+          <tr key={p.id}>
             <td className="py-2">
               <span className="bg-yellow-300 px-2 rounded text-green-900">
-                Em andamento
+                {statusPedido[p.statusPedidoId]}
               </span>
             </td>
-            <td className="py-2">Fernando</td>
-            <td className="py-2">23 abr. 2024</td>
-            <td className="py-2">Transporte</td>
+            <td className="py-2">{p.descricao}</td>
+            <td className="py-2">
+              {p.dataPedido ? formatarData(p.dataPedido) : "--"}
+            </td>
+            <td className="py-2">{categorias[p.categoriaId]}</td>
           </tr>
+        ))}
+        {dados.length === 0 && (
           <tr>
+            <td colSpan={4} className="text-center py-4 text-green-900">
+              Nenhuma solicitação encontrada.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
+}
+
+function Contribuicoes({ formatarData, categorias, statusPedido }: any) {
+  const [dados, setDados] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+    const usuarioId = user.idUsuario;
+    if (!usuarioId) return;
+
+    fetch(`https://recomecar-restfulapi.onrender.com/ofertas-ajuda`)
+      .then((res) => res.json())
+      .then((lista) => {
+        setDados(
+          Array.isArray(lista)
+            ? lista.filter((o) => o.usuarioId === usuarioId)
+            : []
+        );
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Carregando...</div>;
+
+  return (
+    <table className="w-full text-left">
+      <thead>
+        <tr>
+          <th className="py-2">Status</th>
+          <th className="py-2">Descrição</th>
+          <th className="py-2">Data</th>
+          <th className="py-2">Categoria</th>
+        </tr>
+      </thead>
+      <tbody>
+        {dados.map((o) => (
+          <tr key={o.id}>
             <td className="py-2">
               <span className="bg-green-200 px-2 rounded text-green-900">
-                Concluída
+                {statusPedido[o.statusPedidoId]}
               </span>
             </td>
-            <td className="py-2">Isabela</td>
-            <td className="py-2">22 abr. 2024</td>
-            <td className="py-2">Alimentos</td>
+            <td className="py-2">{o.descricao}</td>
+            <td className="py-2">
+              {o.dataOferta ? formatarData(o.dataOferta) : "--"}
+            </td>
+            <td className="py-2">{categorias[o.categoriaId]}</td>
           </tr>
-        </tbody>
-      </table>
-    </section>
+        ))}
+        {dados.length === 0 && (
+          <tr>
+            <td colSpan={4} className="text-center py-4 text-green-900">
+              Nenhuma contribuição encontrada.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
   );
 }

@@ -1,48 +1,83 @@
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 export default function PedidosPage() {
+  const router = useRouter();
+  const [pedidos, setPedidos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    const fetchPedidos = async () => {
+      try {
+        const res = await fetch(
+          "https://recomecar-restfulapi.onrender.com/pedidos-ajuda"
+        );
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        setPedidos(data);
+      } catch (err: any) {
+        setErro(err.message || "Erro ao buscar pedidos.");
+      }
+      setLoading(false);
+    };
+    fetchPedidos();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center mt-16">Carregando pedidos...</div>;
+  }
+
+  if (erro) {
+    return <div className="text-center text-red-600 mt-16">{erro}</div>;
+  }
+
+  if (!pedidos.length) {
+    return <div className="text-center mt-16">Nenhum pedido encontrado.</div>;
+  }
+
   return (
-    <section className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6 mt-8">
-      <h1 className="text-2xl font-bold mb-6 text-green-900">
+    <section className="max-w-2xl mx-auto mt-10">
+      <h1 className="text-2xl font-bold text-green-900 mb-6 text-center">
         Pedidos de Ajuda
       </h1>
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Buscar por nome, categoria ou prioridade"
-          className="border border-yellow-200 rounded px-4 py-2 w-full"
-        />
+      <div className="grid gap-5">
+        {pedidos.map((pedido) => (
+          <div
+            key={pedido.id}
+            className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 hover:shadow-lg transition cursor-pointer"
+            onClick={() => router.push(`/pages/pedidos/${pedido.id}`)}
+          >
+            <div className="flex justify-between items-center">
+              <span className="font-bold text-lg text-green-900">
+                {pedido.descricao}
+              </span>
+              <span
+                className={`px-2 py-1 rounded text-xs ${
+                  pedido.prioridade === 3
+                    ? "bg-red-200 text-red-800"
+                    : pedido.prioridade === 2
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-green-100 text-green-800"
+                }`}
+              >
+                {pedido.prioridade === 3
+                  ? "Urgente"
+                  : pedido.prioridade === 2
+                  ? "Média"
+                  : "Baixa"}
+              </span>
+            </div>
+            <div className="text-sm text-green-800">
+              Categoria: {pedido.categoriaId}
+            </div>
+            <div className="text-sm text-gray-500">
+              Data: {pedido.dataPedido || "N/A"}
+            </div>
+          </div>
+        ))}
       </div>
-      <ul className="space-y-4">
-        <li className="border border-yellow-200 rounded p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-green-900">
-              Preciso de carona
-            </h2>
-            <p className="text-sm text-green-800">Para o hospital amanhã</p>
-            <span className="inline-block mt-1 text-xs bg-red-200 text-red-800 rounded px-2">
-              Urgente
-            </span>
-          </div>
-          <button className="mt-3 sm:mt-0 bg-green-900 text-white font-bold px-4 py-2 rounded hover:bg-green-800 transition">
-            Quero ajudar
-          </button>
-        </li>
-        <li className="border border-yellow-200 rounded p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-green-900">
-              Necessito de alimentos
-            </h2>
-            <p className="text-sm text-green-800">
-              Cestas básicas para família
-            </p>
-            <span className="inline-block mt-1 text-xs bg-yellow-200 text-yellow-900 rounded px-2">
-              Média prioridade
-            </span>
-          </div>
-          <button className="mt-3 sm:mt-0 bg-green-900 text-white font-bold px-4 py-2 rounded hover:bg-green-800 transition">
-            Quero ajudar
-          </button>
-        </li>
-      </ul>
     </section>
   );
 }

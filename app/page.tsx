@@ -9,13 +9,13 @@ export default function Home() {
       </p>
       <div className="flex justify-center gap-4">
         <a
-          href="/solicitar-ajuda"
+          href="/pages/solicitar-ajuda"
           className="bg-yellow-400 text-green-900 px-6 py-3 rounded font-semibold shadow hover:bg-yellow-300 transition"
         >
           Solicite Ajuda
         </a>
         <a
-          href="/oferecer-ajuda"
+          href="/pages/oferecer-ajuda"
           className="bg-yellow-400 text-green-900 px-6 py-3 rounded font-semibold shadow hover:bg-yellow-300 transition"
         >
           Ofereça Ajuda

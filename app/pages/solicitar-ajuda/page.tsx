@@ -19,7 +19,8 @@ export default function SolicitarAjudaPage() {
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
 
-  const usuarioId = 1;
+  const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+  const usuarioId = user.idUsuario;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +56,7 @@ export default function SolicitarAjudaPage() {
       setCategoriaId("");
       setPrioridade("1");
       setTimeout(() => {
-        router.push("/historico");
+        router.push("/pages/historico");
       }, 2000);
     } catch {
       setErro("Erro de conexão.");

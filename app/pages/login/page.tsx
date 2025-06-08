@@ -30,6 +30,7 @@ export default function LoginPage() {
       }
 
       const user = await res.json();
+      localStorage.setItem("usuario", JSON.stringify(user));
       alert("Login realizado com sucesso!\nBem-vindo, " + user.nome);
     } catch (err) {
       setErro("Erro de conexão. Tente novamente." + err);
