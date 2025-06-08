@@ -1,28 +1,31 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Categoria } from "../types";
 
 export default function SolicitarAjudaPage() {
   const router = useRouter();
   const [categorias, setCategorias] = useState<
     { value: number; label: string }[]
   >([]);
-  const [categoriaId, setCategoriaId] = useState("");
+  const [categoriaId, setCategoriaId] = useState<number | "">("");
   const [descricao, setDescricao] = useState("");
   const [prioridade, setPrioridade] = useState("1");
   const [statusPedidoId] = useState(1);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+  const [usuarioId, setUsuarioId] = useState<number | null>(null);
+  const [checkingLogin, setCheckingLogin] = useState(true);
 
   useEffect(() => {
     fetch("https://recomecar-restfulapi.onrender.com/categorias")
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: Categoria[]) => {
         setCategorias(
           Array.isArray(data)
-            ? data.map((c: any) => ({
-                value: c.idCategoria || c.id_categoria,
+            ? data.map((c) => ({
+                value: c.idCategoria ?? c.id_categoria,
                 label: c.nome,
               }))
             : []
@@ -30,8 +33,24 @@ export default function SolicitarAjudaPage() {
       });
   }, []);
 
-  const user = JSON.parse(localStorage.getItem("usuario") || "{}");
-  const usuarioId = user.idUsuario;
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+    if (user?.idUsuario) {
+      setUsuarioId(user.idUsuario);
+      setCheckingLogin(false);
+    } else {
+      router.replace("/pages/login"); // Redireciona para login se não estiver logado
+    }
+  }, [router]);
+
+  useEffect(() => {
+    setErro("");
+    setSucesso("");
+  }, [categoriaId, descricao, prioridade]);
+
+  if (checkingLogin) {
+    return <div className="text-center">Carregando...</div>;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +103,7 @@ export default function SolicitarAjudaPage() {
         <select
           className="border rounded px-3 py-2"
           value={categoriaId}
-          onChange={(e) => setCategoriaId(e.target.value)}
+          onChange={(e) => setCategoriaId(Number(e.target.value))}
           required
         >
           <option value="">Selecione a categoria</option>
