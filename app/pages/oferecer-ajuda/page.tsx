@@ -1,22 +1,33 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-const CATEGORIAS = [
-  { value: 1, label: "Doação de Alimentos" },
-  { value: 2, label: "Hospedagem Temporária" },
-  { value: 3, label: "Transporte" },
-  { value: 4, label: "Roupas" },
-];
 
 export default function OferecerAjudaPage() {
   const router = useRouter();
+  const [categorias, setCategorias] = useState<
+    { value: number; label: string }[]
+  >([]);
   const [categoriaId, setCategoriaId] = useState("");
   const [descricao, setDescricao] = useState("");
   const [statusPedidoId] = useState(1);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+
+  useEffect(() => {
+    fetch("https://recomecar-restfulapi.onrender.com/categorias")
+      .then((res) => res.json())
+      .then((data) => {
+        setCategorias(
+          Array.isArray(data)
+            ? data.map((c: any) => ({
+                value: c.idCategoria || c.id_categoria,
+                label: c.nome,
+              }))
+            : []
+        );
+      });
+  }, []);
 
   const user = JSON.parse(localStorage.getItem("usuario") || "{}");
   const usuarioId = user.idUsuario;
@@ -74,7 +85,7 @@ export default function OferecerAjudaPage() {
           required
         >
           <option value="">Selecione a categoria</option>
-          {CATEGORIAS.map((c) => (
+          {categorias.map((c) => (
             <option key={c.value} value={c.value}>
               {c.label}
             </option>

@@ -19,6 +19,13 @@ export default function Header() {
         >
           Ofereça
         </Link>
+
+        <Link
+          href="/pages/pedidos"
+          className="text-green-900 font-medium hover:underline"
+        >
+          Pedidos
+        </Link>
         <Link
           href="/pages/historico"
           className="text-green-900 font-medium hover:underline"
