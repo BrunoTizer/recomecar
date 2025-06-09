@@ -43,7 +43,7 @@ export default function SolicitarAjudaPage() {
       setUsuarioId(user.idUsuario);
       setCheckingLogin(false);
     } else {
-      router.replace("/pages/login"); // Redireciona para login se não estiver logado
+      router.replace("/pages/login");
     }
   }, [router]);
 

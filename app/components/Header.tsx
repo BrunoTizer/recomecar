@@ -15,8 +15,7 @@ export default function Header() {
   }, []);
 
   function handleLogout() {
-    localStorage.removeItem("usuario"); // Limpa só o usuário
-    setOpen(false);
+    localStorage.removeItem("usuario");
     router.replace("/pages/login");
   }
 
