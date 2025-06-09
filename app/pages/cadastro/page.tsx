@@ -5,14 +5,14 @@ import { Campo, Select } from "@/app/components";
 
 export default function CadastroPage() {
   const router = useRouter();
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [tipo, setTipo] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState("");
+  const [nome, setNome] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [senha, setSenha] = useState<string>("");
+  const [telefone, setTelefone] = useState<string>("");
+  const [tipo, setTipo] = useState<"" | "vitima" | "voluntario">("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [erro, setErro] = useState<string>("");
+  const [sucesso, setSucesso] = useState<string>("");
 
   const handleCadastro = async (e: React.FormEvent) => {
     e.preventDefault();

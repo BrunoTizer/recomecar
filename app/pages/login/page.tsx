@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Campo from "@/app/components/Campo";
+import { Usuario } from "@/app/types";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function LoginPage() {
         return;
       }
 
-      const user = await res.json();
+      const user: Usuario = await res.json();
       localStorage.setItem("usuario", JSON.stringify(user));
       if (user.tipo === "vitima") {
         router.replace("/pages/solicitar-ajuda");
@@ -38,9 +39,14 @@ export default function LoginPage() {
       } else {
         router.replace("/");
       }
-    } catch (err) {
-      setErro("Erro de conexão. Tente novamente." + err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErro("Erro de conexão. " + err.message);
+      } else {
+        setErro("Erro de conexão. Tente novamente.");
+      }
     }
+
     setLoading(false);
   };
 

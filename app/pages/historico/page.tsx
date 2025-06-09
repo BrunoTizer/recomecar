@@ -124,7 +124,7 @@ function Solicitacoes({
 
     fetch(`http://localhost:8080/pedidos-ajuda`)
       .then((res) => res.json())
-      .then((lista) => {
+      .then((lista: PedidoAjuda[]) => {
         setDados(
           Array.isArray(lista)
             ? lista.filter((p) => p.usuarioId === usuarioId)
