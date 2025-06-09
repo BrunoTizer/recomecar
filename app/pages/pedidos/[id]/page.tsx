@@ -16,6 +16,9 @@ export default function PedidoDetalhePage() {
   const [btnLoading, setBtnLoading] = useState(false);
   const [categorias, setCategorias] = useState<Record<number, string>>({});
   const [statusPedido, setStatusPedido] = useState<Record<number, string>>({});
+  const [pedidoLoading, setPedidoLoading] = useState(true);
+  const [categoriasLoading, setCategoriasLoading] = useState(true);
+  const [statusLoading, setStatusLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:8080/categorias")
@@ -27,7 +30,9 @@ export default function PedidoDetalhePage() {
           if (typeof id === "number") map[id] = c.nome;
         });
         setCategorias(map);
-      });
+      })
+      .finally(() => setCategoriasLoading(false));
+
     fetch("http://localhost:8080/status-pedido")
       .then((res) => res.json())
       .then((lista) => {
@@ -37,7 +42,8 @@ export default function PedidoDetalhePage() {
           if (typeof id === "number") map[id] = s.nome;
         });
         setStatusPedido(map);
-      });
+      })
+      .finally(() => setStatusLoading(false));
   }, []);
 
   useEffect(() => {
@@ -54,7 +60,7 @@ export default function PedidoDetalhePage() {
           setErro("Erro ao carregar pedido.");
         }
       }
-      setLoading(false);
+      setPedidoLoading(false);
     }
     fetchPedido();
   }, [id]);
@@ -97,8 +103,9 @@ export default function PedidoDetalhePage() {
     }
     setBtnLoading(false);
   }
-
-  if (loading) return <Feedback>Carregando pedidos...</Feedback>;
+  if (pedidoLoading || categoriasLoading || statusLoading) {
+    return <Feedback>Carregando detalhes...</Feedback>;
+  }
   if (erro) return <Feedback className="text-red-600">{erro}</Feedback>;
   if (!pedido)
     return <Feedback className="text-red-600">Pedido não encontrado</Feedback>;
@@ -111,7 +118,7 @@ export default function PedidoDetalhePage() {
       <ul className="mb-4 text-sm text-green-800">
         <li>
           <strong>Categoria:</strong>{" "}
-          {categorias[pedido.categoriaId] ?? pedido.categoriaId}
+          {categorias[pedido.categoriaId] || "Carregando..."}
         </li>
         <li>
           <strong>Prioridade:</strong>{" "}
@@ -123,7 +130,7 @@ export default function PedidoDetalhePage() {
         </li>
         <li>
           <strong>Status:</strong>{" "}
-          {statusPedido[pedido.statusPedidoId] ?? pedido.statusPedidoId}
+          {statusPedido[pedido.statusPedidoId] || "Carregando..."}
         </li>
         <li>
           <strong>Data:</strong> {pedido.dataPedido ?? "--"}
