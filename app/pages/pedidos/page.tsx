@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PedidoAjuda } from "@/app/types";
-import { PedidoCard } from "@/app/components";
+import { PedidoCard, Feedback } from "@/app/components";
 
 export default function PedidosPage() {
   const router = useRouter();
@@ -41,21 +41,10 @@ export default function PedidosPage() {
     fetchPedidos();
   }, [checkingLogin]);
 
-  if (checkingLogin) {
-    return <div className="text-center">Carregando...</div>;
-  }
-
-  if (loading) {
-    return <div className="text-center mt-16">Carregando pedidos...</div>;
-  }
-
-  if (erro) {
-    return <div className="text-center text-red-600 mt-16">{erro}</div>;
-  }
-
-  if (!pedidos.length) {
-    return <div className="text-center mt-16">Nenhum pedido encontrado.</div>;
-  }
+  if (checkingLogin) return <Feedback>Carregando...</Feedback>;
+  if (loading) return <Feedback>Carregando pedidos...</Feedback>;
+  if (erro) return <Feedback className="text-red-600">{erro}</Feedback>;
+  if (!pedidos.length) return <Feedback>Nenhum pedido encontrado.</Feedback>;
 
   return (
     <section className="max-w-2xl mx-auto mt-10">
