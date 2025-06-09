@@ -14,7 +14,7 @@ O **Recomeçar+** é uma plataforma web responsiva desenvolvida em **React/Next.
 
 ## Link do Projeto na Vercel
 
-> https://recome-ar.vercel.app/
+> https://recomecar-l7dv.vercel.app/
 
 ## Link da API
 
@@ -84,7 +84,7 @@ README.md
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/Gabriel-Souza10/Recome-ar
+git clone https://github.com/BrunoTizer/recomecar
 cd recomecar-frontend
 ```
 
