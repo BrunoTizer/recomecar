@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Campo from "@/app/components/Campo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -49,18 +50,16 @@ export default function LoginPage() {
         Entrar
       </h1>
       <form onSubmit={handleLogin} className="flex flex-col gap-4">
-        <input
+        <Campo
           type="email"
           placeholder="E-mail"
-          className="border rounded px-3 py-2"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <input
+        <Campo
           type="password"
           placeholder="Senha"
-          className="border rounded px-3 py-2"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
           required

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Campo, Select } from "@/app/components";
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -8,7 +9,7 @@ export default function CadastroPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [telefone, setTelefone] = useState("");
-  const [tipo, setTipo] = useState(""); // novo campo
+  const [tipo, setTipo] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
@@ -49,48 +50,39 @@ export default function CadastroPage() {
         Cadastro
       </h1>
       <form onSubmit={handleCadastro} className="flex flex-col gap-4">
-        <input
+        <Campo
           type="text"
           placeholder="Nome"
-          className="border rounded px-3 py-2"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
           required
         />
-        <input
+        <Campo
           type="email"
           placeholder="E-mail"
-          className="border rounded px-3 py-2"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <input
+        <Campo
           type="password"
           placeholder="Senha"
-          className="border rounded px-3 py-2"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
           required
         />
-        <input
+        <Campo
           type="text"
           placeholder="Telefone"
-          className="border rounded px-3 py-2"
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
           required
         />
-        <select
-          className="border rounded px-3 py-2"
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value)}
-          required
-        >
+        <Select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
           <option value="">Selecione o tipo de usuário</option>
           <option value="vitima">Quero receber ajuda</option>
           <option value="voluntario">Quero oferecer ajuda</option>
-        </select>
+        </Select>
         <button
           type="submit"
           className="bg-green-900 text-white rounded py-2 font-bold hover:bg-green-800 transition"

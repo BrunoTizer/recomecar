@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Categoria } from "../../types";
+import { Select } from "@/app/components";
 
 export default function SolicitarAjudaPage() {
   const router = useRouter();
@@ -100,8 +101,7 @@ export default function SolicitarAjudaPage() {
         Solicitar Ajuda
       </h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <select
-          className="border rounded px-3 py-2"
+        <Select
           value={categoriaId}
           onChange={(e) => setCategoriaId(Number(e.target.value))}
           required
@@ -112,7 +112,7 @@ export default function SolicitarAjudaPage() {
               {c.label}
             </option>
           ))}
-        </select>
+        </Select>
         <textarea
           placeholder="Descreva sua necessidade"
           className="border rounded px-3 py-2 min-h-[80px]"
