@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { OfertaAjuda, PedidoAjuda } from "@/app/types";
+import { Feedback } from "@/app/components";
 
 export default function PedidoDetalhePage() {
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   const { id } = params;
 
@@ -13,13 +14,38 @@ export default function PedidoDetalhePage() {
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
+  const [categorias, setCategorias] = useState<Record<number, string>>({});
+  const [statusPedido, setStatusPedido] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    fetch("http://localhost:8080/categorias")
+      .then((res) => res.json())
+      .then((lista) => {
+        const map: Record<number, string> = {};
+        lista.forEach((c: any) => {
+          const id = c.idCategoria ?? c.id_categoria;
+          if (typeof id === "number") map[id] = c.nome;
+        });
+        setCategorias(map);
+      });
+    fetch("http://localhost:8080/status-pedido")
+      .then((res) => res.json())
+      .then((lista) => {
+        const map: Record<number, string> = {};
+        lista.forEach((s: any) => {
+          const id = s.idStatus ?? s.id_status;
+          if (typeof id === "number") map[id] = s.nome;
+        });
+        setStatusPedido(map);
+      });
+  }, []);
 
   useEffect(() => {
     async function fetchPedido() {
       try {
         const res = await fetch(`http://localhost:8080/pedidos-ajuda/${id}`);
         if (!res.ok) throw new Error(await res.text());
-        const data = await res.json();
+        const data: PedidoAjuda = await res.json();
         setPedido(data);
       } catch (err) {
         if (err instanceof Error) {
@@ -72,24 +98,38 @@ export default function PedidoDetalhePage() {
     setBtnLoading(false);
   }
 
-  if (loading) {
-    return <div className="text-center mt-16">Carregando detalhes...</div>;
-  }
-
-  if (erro) {
-    return <div className="text-center text-red-600 mt-16">{erro}</div>;
-  }
-
-  if (!pedido) {
-    return <div className="text-center mt-16">Pedido não encontrado.</div>;
-  }
+  if (loading) return <Feedback>Carregando pedidos...</Feedback>;
+  if (erro) return <Feedback className="text-red-600">{erro}</Feedback>;
+  if (!pedido)
+    return <Feedback className="text-red-600">Pedido não encontrado</Feedback>;
 
   return (
     <section className="max-w-md mx-auto bg-white rounded-lg shadow p-6 mt-8">
       <h1 className="text-2xl font-bold mb-4 text-green-900">
         {pedido.descricao}
       </h1>
-      <ul className="mb-4 text-sm text-green-800">{/* ...seus campos... */}</ul>
+      <ul className="mb-4 text-sm text-green-800">
+        <li>
+          <strong>Categoria:</strong>{" "}
+          {categorias[pedido.categoriaId] ?? pedido.categoriaId}
+        </li>
+        <li>
+          <strong>Prioridade:</strong>{" "}
+          {pedido.prioridade === 3
+            ? "Urgente"
+            : pedido.prioridade === 2
+            ? "Média"
+            : "Baixa"}
+        </li>
+        <li>
+          <strong>Status:</strong>{" "}
+          {statusPedido[pedido.statusPedidoId] ?? pedido.statusPedidoId}
+        </li>
+        <li>
+          <strong>Data:</strong> {pedido.dataPedido ?? "--"}
+        </li>
+      </ul>
+
       <button
         className="bg-green-900 text-white font-bold rounded py-2 w-full hover:bg-green-800 transition mb-2"
         onClick={handleQueroAjudar}
