@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Categoria } from "../../types";
-import { Select } from "@/app/components";
+import { Select, Botao } from "@/app/components";
 
 export default function SolicitarAjudaPage() {
   const router = useRouter();
@@ -130,13 +130,9 @@ export default function SolicitarAjudaPage() {
           <option value="2">Média prioridade</option>
           <option value="3">Urgente</option>
         </select>
-        <button
-          type="submit"
-          className="bg-green-900 text-white rounded py-2 font-bold hover:bg-green-800 transition"
-          disabled={loading}
-        >
+        <Botao type="submit" disabled={loading}>
           {loading ? "Enviando..." : "Solicitar ajuda"}
-        </button>
+        </Botao>
         {erro && <div className="text-red-600 text-sm text-center">{erro}</div>}
         {sucesso && (
           <div className="text-green-800 text-sm text-center">{sucesso}</div>

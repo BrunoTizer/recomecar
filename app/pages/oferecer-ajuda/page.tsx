@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Categoria } from "@/app/types";
-import { Select } from "@/app/components";
+import { Botao, Select } from "@/app/components";
 
 export default function OferecerAjudaPage() {
   const router = useRouter();
@@ -117,13 +117,9 @@ export default function OferecerAjudaPage() {
           onChange={(e) => setDescricao(e.target.value)}
           required
         />
-        <button
-          type="submit"
-          className="bg-green-900 text-white rounded py-2 font-bold hover:bg-green-800 transition"
-          disabled={loading}
-        >
-          {loading ? "Enviando..." : "Oferecer ajuda"}
-        </button>
+        <Botao type="submit" disabled={loading}>
+          {loading ? "Enviando..." : "Solicitar ajuda"}
+        </Botao>
         {erro && <div className="text-red-600 text-sm text-center">{erro}</div>}
         {sucesso && (
           <div className="text-green-800 text-sm text-center">{sucesso}</div>

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PedidoAjuda } from "@/app/types";
+import { PedidoCard } from "@/app/components";
 
 export default function PedidosPage() {
   const router = useRouter();
@@ -63,38 +64,11 @@ export default function PedidosPage() {
       </h1>
       <div className="grid gap-5">
         {pedidos.map((pedido) => (
-          <div
+          <PedidoCard
             key={pedido.id}
-            className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 hover:shadow-lg transition cursor-pointer"
+            pedido={pedido}
             onClick={() => router.push(`/pages/pedidos/${pedido.id}`)}
-          >
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-lg text-green-900">
-                {pedido.descricao}
-              </span>
-              <span
-                className={`px-2 py-1 rounded text-xs ${
-                  pedido.prioridade === 3
-                    ? "bg-red-200 text-red-800"
-                    : pedido.prioridade === 2
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-green-100 text-green-800"
-                }`}
-              >
-                {pedido.prioridade === 3
-                  ? "Urgente"
-                  : pedido.prioridade === 2
-                  ? "Média"
-                  : "Baixa"}
-              </span>
-            </div>
-            <div className="text-sm text-green-800">
-              Categoria: {pedido.categoriaId}
-            </div>
-            <div className="text-sm text-gray-500">
-              Data: {pedido.dataPedido || "N/A"}
-            </div>
-          </div>
+          />
         ))}
       </div>
     </section>
