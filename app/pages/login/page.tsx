@@ -17,11 +17,14 @@ export default function LoginPage() {
     setErro("");
 
     try {
-      const res = await fetch("http://localhost:8080/usuarios/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, senha }),
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/usuarios/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, senha }),
+        }
+      );
 
       if (!res.ok) {
         const errorMsg = await res.text();

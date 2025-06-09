@@ -25,7 +25,9 @@ export default function PedidosPage() {
     if (checkingLogin) return;
     const fetchPedidos = async () => {
       try {
-        const res = await fetch("http://localhost:8080/pedidos-ajuda");
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_URL + "/pedidos-ajuda"
+        );
         if (!res.ok) throw new Error(await res.text());
         const data: PedidoAjuda[] = await res.json();
         setPedidos(data);

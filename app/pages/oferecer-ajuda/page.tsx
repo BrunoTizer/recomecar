@@ -19,7 +19,7 @@ export default function OferecerAjudaPage() {
   const [checkingLogin, setCheckingLogin] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8080/categorias")
+    fetch(process.env.NEXT_PUBLIC_API_URL + "/categorias")
       .then((res) => res.json())
       .then((data: Categoria[]) => {
         setCategorias(
@@ -62,16 +62,19 @@ export default function OferecerAjudaPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/ofertas-ajuda", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuarioId,
-          categoriaId: Number(categoriaId),
-          descricao,
-          statusPedidoId,
-        }),
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/ofertas-ajuda",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            usuarioId,
+            categoriaId: Number(categoriaId),
+            descricao,
+            statusPedidoId,
+          }),
+        }
+      );
 
       if (!res.ok) {
         const msg = await res.text();

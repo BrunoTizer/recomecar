@@ -38,7 +38,7 @@ export default function PedidoDetalhePage() {
   }
 
   useEffect(() => {
-    fetch("http://localhost:8080/categorias")
+    fetch(process.env.NEXT_PUBLIC_API_URL + "/categorias")
       .then((res) => res.json())
       .then((lista: Categoria[]) => {
         const map: Record<number, string> = {};
@@ -50,7 +50,7 @@ export default function PedidoDetalhePage() {
       })
       .finally(() => setCategoriasLoading(false));
 
-    fetch("http://localhost:8080/status-pedido")
+    fetch(process.env.NEXT_PUBLIC_API_URL + "/status-pedido")
       .then((res) => res.json())
       .then((lista: StatusPedido[]) => {
         const map: Record<number, string> = {};
@@ -91,7 +91,9 @@ export default function PedidoDetalhePage() {
       const usuarioId = user.idUsuario;
       if (!usuarioId) throw new Error("Usuário não encontrado.");
 
-      const ofertasRes = await fetch("http://localhost:8080/ofertas-ajuda");
+      const ofertasRes = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/ofertas-ajuda"
+      );
       if (!ofertasRes.ok) throw new Error("Erro ao buscar ofertas.");
       const ofertas = (await ofertasRes.json()) as OfertaAjuda[];
       const minhas = ofertas.filter((o) => o.usuarioId === usuarioId);
@@ -99,7 +101,7 @@ export default function PedidoDetalhePage() {
         throw new Error("Cadastre uma oferta de ajuda primeiro!");
       const ultimaOferta = minhas[minhas.length - 1];
 
-      const res = await fetch("http://localhost:8080/matches", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

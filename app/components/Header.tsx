@@ -1,22 +1,31 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [logado, setLogado] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setLogado(!!localStorage.getItem("usuario"));
+    }
+  }, []);
+
+  function handleLogout() {
+    localStorage.removeItem("usuario"); // Limpa só o usuário
+    setOpen(false);
+    router.replace("/pages/login");
+  }
 
   return (
     <header className="w-full bg-yellow-50 border-b border-yellow-200 mb-6">
       <div className="flex items-center justify-between w-full">
-        {/* Logo à esquerda, SEM padding */}
-        <Link
-          href="/"
-          className="text-2xl font-bold text-green-900 pl-4 py-4"
-          style={{ marginRight: 0 }}
-        >
+        <Link href="/" className="text-2xl font-bold text-green-900 pl-4 py-4">
           Recomeçar<span className="text-yellow-500">+</span>
         </Link>
-        {/* Botão hamburger mobile */}
         <button
           className="md:hidden p-2 rounded hover:bg-yellow-100"
           aria-label="Abrir menu"
@@ -36,8 +45,7 @@ export default function Header() {
             />
           </svg>
         </button>
-        {/* Menu desktop colado na direita */}
-        <nav className="hidden md:flex gap-8 pr-4">
+        <nav className="hidden md:flex gap-8 pr-4 items-center">
           <Link
             href="/pages/solicitar-ajuda"
             className="text-green-900 font-medium hover:underline"
@@ -62,6 +70,16 @@ export default function Header() {
           >
             Histórico
           </Link>
+          {logado && (
+            <button
+              onClick={handleLogout}
+              className="ml-2 px-4 py-2 bg-green-900 text-white rounded font-bold hover:bg-green-800 transition cursor-pointer"
+              aria-label="Sair da conta"
+              type="button"
+            >
+              Sair
+            </button>
+          )}
         </nav>
       </div>
       {/* Menu mobile */}
@@ -95,6 +113,16 @@ export default function Header() {
           >
             Histórico
           </Link>
+          {logado && (
+            <button
+              onClick={handleLogout}
+              className="ml-2 px-4 py-2 bg-green-900 text-white rounded font-bold hover:bg-green-800 transition cursor-pointer"
+              aria-label="Sair da conta"
+              type="button"
+            >
+              Sair
+            </button>
+          )}
         </nav>
       )}
     </header>

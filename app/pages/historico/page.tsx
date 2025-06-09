@@ -9,7 +9,7 @@ import {
 } from "../../types";
 import { useRouter } from "next/navigation";
 
-const ENDPOINT_STATUS = "http://localhost:8080/status-pedido";
+const ENDPOINT_STATUS = process.env.NEXT_PUBLIC_API_URL + "/status-pedido";
 
 export default function HistoricoPage() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function HistoricoPage() {
 
   useEffect(() => {
     if (checkingLogin) return;
-    fetch("http://localhost:8080/categorias")
+    fetch(process.env.NEXT_PUBLIC_API_URL + "/categorias")
       .then((res) => res.json())
       .then((lista: Categoria[]) => {
         const map: Record<number, string> = {};
