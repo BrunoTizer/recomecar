@@ -66,7 +66,9 @@ export default function PedidoDetalhePage() {
   useEffect(() => {
     async function fetchPedido() {
       try {
-        const res = await fetch(`http://localhost:8080/pedidos-ajuda/${id}`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/pedidos-ajuda/${id}`
+        );
         if (!res.ok) throw new Error(await res.text());
         const data: PedidoAjuda = await res.json();
         setPedido(data);

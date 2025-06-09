@@ -126,7 +126,7 @@ function Solicitacoes({
     const usuarioId = user.idUsuario;
     if (!usuarioId) return;
 
-    fetch(`http://localhost:8080/pedidos-ajuda`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/pedidos-ajuda`)
       .then((res) => res.json())
       .then((lista: PedidoAjuda[]) => {
         setDados(
@@ -219,7 +219,7 @@ function Contribuicoes({
     const usuarioId = user.idUsuario;
     if (!usuarioId) return;
 
-    fetch(`http://localhost:8080/ofertas-ajuda`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/ofertas-ajuda`)
       .then((res) => res.json())
       .then((lista) => {
         setDados(
