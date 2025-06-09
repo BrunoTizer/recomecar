@@ -34,7 +34,7 @@ export default function CadastroPage() {
         return;
       }
 
-      setSucesso("Cadastro realizado com sucesso! Você já pode fazer login.");
+      setSucesso("Cadastro realizado com sucesso! Agora Você já pode fazer login.");
       setTimeout(() => {
         router.push("/pages/login");
       }, 1800);
