@@ -77,6 +77,8 @@ export default function HistoricoPage() {
               ? "bg-yellow-300 text-green-900 font-bold"
               : "bg-gray-100"
           }`}
+          aria-pressed={tab === "solicitacoes"}
+          aria-label="Ver minhas solicitações"
           onClick={() => setTab("solicitacoes")}
         >
           Minhas Solicitações
@@ -87,6 +89,8 @@ export default function HistoricoPage() {
               ? "bg-yellow-300 text-green-900 font-bold"
               : "bg-gray-100"
           }`}
+          aria-pressed={tab === "contribuicoes"}
+          aria-label="Ver minhas contribuições"
           onClick={() => setTab("contribuicoes")}
         >
           Minhas Contribuições
@@ -137,39 +141,68 @@ function Solicitacoes({
   if (loading) return <div>Carregando...</div>;
 
   return (
-    <table className="w-full text-left">
-      <thead>
-        <tr>
-          <th className="py-2">Status</th>
-          <th className="py-2">Descrição</th>
-          <th className="py-2">Data</th>
-          <th className="py-2">Categoria</th>
-        </tr>
-      </thead>
-      <tbody>
+    <>
+      <table className="w-full text-left hidden md:table">
+        <thead>
+          <tr>
+            <th className="py-2">Status</th>
+            <th className="py-2">Descrição</th>
+            <th className="py-2">Data</th>
+            <th className="py-2">Categoria</th>
+          </tr>
+        </thead>
+        <tbody>
+          {dados.map((p) => (
+            <tr key={p.id}>
+              <td className="py-2">
+                <span className="bg-yellow-300 px-2 rounded text-green-900">
+                  {statusPedido[p.statusPedidoId]}
+                </span>
+              </td>
+              <td className="py-2">{p.descricao}</td>
+              <td className="py-2">
+                {p.dataPedido ? formatarData(p.dataPedido) : "--"}
+              </td>
+              <td className="py-2">{categorias[p.categoriaId]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Mobile: Cards */}
+      <div className="flex flex-col gap-4 md:hidden">
         {dados.map((p) => (
-          <tr key={p.id}>
-            <td className="py-2">
+          <div
+            key={p.id}
+            className="bg-gray-50 rounded-lg p-4 shadow flex flex-col gap-1"
+          >
+            <div>
+              <span className="font-bold text-green-900">Status:</span>{" "}
               <span className="bg-yellow-300 px-2 rounded text-green-900">
                 {statusPedido[p.statusPedidoId]}
               </span>
-            </td>
-            <td className="py-2">{p.descricao}</td>
-            <td className="py-2">
+            </div>
+            <div>
+              <span className="font-bold text-green-900">Descrição:</span>{" "}
+              {p.descricao}
+            </div>
+            <div>
+              <span className="font-bold text-green-900">Data:</span>{" "}
               {p.dataPedido ? formatarData(p.dataPedido) : "--"}
-            </td>
-            <td className="py-2">{categorias[p.categoriaId]}</td>
-          </tr>
+            </div>
+            <div>
+              <span className="font-bold text-green-900">Categoria:</span>{" "}
+              {categorias[p.categoriaId]}
+            </div>
+          </div>
         ))}
         {dados.length === 0 && (
-          <tr>
-            <td colSpan={4} className="text-center py-4 text-green-900">
-              Nenhuma solicitação encontrada.
-            </td>
-          </tr>
+          <div className="text-center py-4 text-green-900 bg-gray-50 rounded-lg">
+            Nenhuma solicitação encontrada.
+          </div>
         )}
-      </tbody>
-    </table>
+      </div>
+    </>
   );
 }
 
@@ -201,38 +234,68 @@ function Contribuicoes({
   if (loading) return <div>Carregando...</div>;
 
   return (
-    <table className="w-full text-left">
-      <thead>
-        <tr>
-          <th className="py-2">Status</th>
-          <th className="py-2">Descrição</th>
-          <th className="py-2">Data</th>
-          <th className="py-2">Categoria</th>
-        </tr>
-      </thead>
-      <tbody>
+    <>
+      {/* Desktop: Tabela */}
+      <table className="w-full text-left hidden md:table">
+        <thead>
+          <tr>
+            <th className="py-2">Status</th>
+            <th className="py-2">Descrição</th>
+            <th className="py-2">Data</th>
+            <th className="py-2">Categoria</th>
+          </tr>
+        </thead>
+        <tbody>
+          {dados.map((o) => (
+            <tr key={o.id}>
+              <td className="py-2">
+                <span className="bg-green-200 px-2 rounded text-green-900">
+                  {statusPedido[o.statusPedidoId]}
+                </span>
+              </td>
+              <td className="py-2">{o.descricao}</td>
+              <td className="py-2">
+                {o.dataOferta ? formatarData(o.dataOferta) : "--"}
+              </td>
+              <td className="py-2">{categorias[o.categoriaId]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Mobile: Cards */}
+      <div className="flex flex-col gap-4 md:hidden">
         {dados.map((o) => (
-          <tr key={o.id}>
-            <td className="py-2">
+          <div
+            key={o.id}
+            className="bg-green-50 rounded-lg p-4 shadow flex flex-col gap-1"
+          >
+            <div>
+              <span className="font-bold text-green-900">Status:</span>{" "}
               <span className="bg-green-200 px-2 rounded text-green-900">
                 {statusPedido[o.statusPedidoId]}
               </span>
-            </td>
-            <td className="py-2">{o.descricao}</td>
-            <td className="py-2">
+            </div>
+            <div>
+              <span className="font-bold text-green-900">Descrição:</span>{" "}
+              {o.descricao}
+            </div>
+            <div>
+              <span className="font-bold text-green-900">Data:</span>{" "}
               {o.dataOferta ? formatarData(o.dataOferta) : "--"}
-            </td>
-            <td className="py-2">{categorias[o.categoriaId]}</td>
-          </tr>
+            </div>
+            <div>
+              <span className="font-bold text-green-900">Categoria:</span>{" "}
+              {categorias[o.categoriaId]}
+            </div>
+          </div>
         ))}
         {dados.length === 0 && (
-          <tr>
-            <td colSpan={4} className="text-center py-4 text-green-900">
-              Nenhuma contribuição encontrada.
-            </td>
-          </tr>
+          <div className="text-center py-4 text-green-900 bg-green-50 rounded-lg">
+            Nenhuma contribuição encontrada.
+          </div>
         )}
-      </tbody>
-    </table>
+      </div>
+    </>
   );
 }

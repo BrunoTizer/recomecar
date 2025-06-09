@@ -51,6 +51,8 @@ export default function CadastroPage() {
       </h1>
       <form onSubmit={handleCadastro} className="flex flex-col gap-4">
         <Campo
+          label="Nome"
+          id="nome"
           type="text"
           placeholder="Nome"
           value={nome}
@@ -58,6 +60,8 @@ export default function CadastroPage() {
           required
         />
         <Campo
+          label="E-mail"
+          id="email"
           type="email"
           placeholder="E-mail"
           value={email}
@@ -65,6 +69,8 @@ export default function CadastroPage() {
           required
         />
         <Campo
+          label="Senha"
+          id="senha"
           type="password"
           placeholder="Senha"
           value={senha}
@@ -72,13 +78,21 @@ export default function CadastroPage() {
           required
         />
         <Campo
+          label="Telefone"
+          id="telefone"
           type="text"
           placeholder="Telefone"
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
           required
         />
-        <Select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
+        <Select
+          value={tipo}
+          onChange={(e) =>
+            setTipo(e.target.value as "" | "vitima" | "voluntario")
+          }
+          required
+        >
           <option value="">Selecione o tipo de usuário</option>
           <option value="vitima">Quero receber ajuda</option>
           <option value="voluntario">Quero oferecer ajuda</option>

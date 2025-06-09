@@ -57,6 +57,7 @@ export default function LoginPage() {
       </h1>
       <form onSubmit={handleLogin} className="flex flex-col gap-4">
         <Campo
+          label="E-mail"
           type="email"
           placeholder="E-mail"
           value={email}
@@ -64,6 +65,7 @@ export default function LoginPage() {
           required
         />
         <Campo
+          label="Senha"
           type="password"
           placeholder="Senha"
           value={senha}

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { OfertaAjuda, PedidoAjuda } from "@/app/types";
+import { Categoria, OfertaAjuda, PedidoAjuda, StatusPedido } from "@/app/types";
 import { Feedback } from "@/app/components";
 
 export default function PedidoDetalhePage() {
@@ -10,7 +10,6 @@ export default function PedidoDetalhePage() {
   const { id } = params;
 
   const [pedido, setPedido] = useState<PedidoAjuda | null>(null);
-  const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
@@ -20,13 +19,31 @@ export default function PedidoDetalhePage() {
   const [categoriasLoading, setCategoriasLoading] = useState(true);
   const [statusLoading, setStatusLoading] = useState(true);
 
+  function getCategoriaId(
+    c: Categoria | { id_categoria?: number }
+  ): number | undefined {
+    if ("idCategoria" in c && typeof c.idCategoria === "number")
+      return c.idCategoria;
+    if ("id_categoria" in c && typeof c.id_categoria === "number")
+      return c.id_categoria;
+    return undefined;
+  }
+
+  function getStatusId(
+    s: StatusPedido | { id_status?: number }
+  ): number | undefined {
+    if ("idStatus" in s && typeof s.idStatus === "number") return s.idStatus;
+    if ("id_status" in s && typeof s.id_status === "number") return s.id_status;
+    return undefined;
+  }
+
   useEffect(() => {
     fetch("http://localhost:8080/categorias")
       .then((res) => res.json())
-      .then((lista) => {
+      .then((lista: Categoria[]) => {
         const map: Record<number, string> = {};
-        lista.forEach((c: any) => {
-          const id = c.idCategoria ?? c.id_categoria;
+        lista.forEach((c) => {
+          const id = getCategoriaId(c);
           if (typeof id === "number") map[id] = c.nome;
         });
         setCategorias(map);
@@ -35,10 +52,10 @@ export default function PedidoDetalhePage() {
 
     fetch("http://localhost:8080/status-pedido")
       .then((res) => res.json())
-      .then((lista) => {
+      .then((lista: StatusPedido[]) => {
         const map: Record<number, string> = {};
-        lista.forEach((s: any) => {
-          const id = s.idStatus ?? s.id_status;
+        lista.forEach((s: StatusPedido) => {
+          const id = getStatusId(s);
           if (typeof id === "number") map[id] = s.nome;
         });
         setStatusPedido(map);
